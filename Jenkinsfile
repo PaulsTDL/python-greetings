@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('build-docker-image') {
             steps {
-                build()
+                buildDockerImage()
             }
         }
         stage('deploy-to-dev') {
@@ -39,7 +39,7 @@ pipeline {
     }
 }
 
-def build(){
+def buildDockerImage(){
     echo "Building docker image..."
     sh "docker build -t pgreinhards/python-greetings-app:latest ."
 
@@ -50,9 +50,10 @@ def build(){
 def deploy(String environment){
     echo "Deploying Python microservice to ${environment} environment.."
     sh "docker pull pgreinhards/python-greetings-app:latest"
-    sh "docker-compose stop greetings-app-${environment}"
-    sh "docker-compose rm greetings-app-${environment}"
-    sh "docker-compose up greetings-app-${environment}"
+    String lowercaseEnvironment = environment.toLowerCase()
+    sh "docker-compose stop greetings-app-${lowercaseEnvironment}"
+    sh "docker-compose rm greetings-app-${lowercaseEnvironment}"
+    sh "docker-compose up -d greetings-app-${lowercaseEnvironment}"
 }
 
 def test(String environment){
