@@ -28,12 +28,12 @@ pipeline {
         }
         stage('deploy-to-prod') {
             steps {
-                deploy("PRD")
+                deploy("PROD")
             }
         }
         stage('tests-on-prod') {
             steps {
-                test("PRD")
+                test("PROD")
             }
         }
     }
@@ -59,5 +59,6 @@ def deploy(String environment){
 def test(String environment){
     echo "Running API tests on ${environment} environment.."
     sh "docker pull pgreinhards/api-tests:latest"
-    sh "docker run --network=host --rm pgreinhards/api-tests:latest run greetings greetings_${environment}"
+    String lowercaseEnvironment = environment.toLowerCase()
+    sh "docker run --network=host --rm pgreinhards/api-tests:latest run greetings greetings_${lowercaseEnvironment}"
 }
